@@ -10,8 +10,172 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Item {
-    id       Int     @id @default(autoincrement())
-    name     String?
-    quantity Int?
+model User {
+    uid       String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    email     String   @unique
+
+    owner      Owner?
+    advertiser Advertiser?
+    agent      Agent?
+}
+
+model Owner {
+    uid        String      @id
+    createdAt  DateTime    @default(now())
+    updatedAt  DateTime    @updatedAt
+    name       String
+    user       User        @relation(fields: [uid], references: [uid])
+    billboards Billboard[]
+}
+
+model Advertiser {
+    uid       String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+
+    user      User       @relation(fields: [uid], references: [uid])
+    campaigns Campaign[]
+    Favorite  Favorite[]
+}
+
+model Agent {
+    uid       String   @id
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+
+    user               User              @relation(fields: [uid], references: [uid])
+    billboardsStatuses BillboardStatus[]
+    campaignsStatuses  CampaignStatus[]
+}
+
+model Billboard {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    lat Float
+    lng Float
+
+    height Float
+    width  Float
+
+    pricePerDay       Float?
+    impressionsPerDay Int?
+    minBookingDays    Int?
+    address           String?
+    images            String[]
+
+    type    BillboardType
+    owner   Owner         @relation(fields: [ownerId], references: [uid])
+    ownerId String
+
+    bookings  Booking[]
+    angle     Int?
+    elevation Int?
+
+    status    BillboardStatus?
+    favorites Favorite[]
+}
+
+model Favorite {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    advertiserId String
+    advertiser   Advertiser @relation(fields: [advertiserId], references: [uid])
+    billboardId  Int
+    billboard    Billboard  @relation(fields: [billboardId], references: [id])
+
+    @@id([advertiserId, billboardId])
+}
+
+model BillboardStatus {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    notes  String?
+    status BillboardStatusType
+
+    billboard   Billboard @relation(fields: [billboardId], references: [id])
+    billboardId Int       @id
+    agent       Agent     @relation(fields: [agentId], references: [uid])
+    agentId     String
+}
+
+/// Campaigns everyone.
+model Campaign {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    name      String
+    startDate DateTime @db.Date
+    endDate   DateTime @db.Date
+
+    advertiser   Advertiser      @relation(fields: [advertiserId], references: [uid])
+    advertiserId String
+    bookings     Booking[]
+    status       CampaignStatus?
+}
+
+model Booking {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    pricePerDay Float?
+
+    campaign    Campaign? @relation(fields: [campaignId], references: [id])
+    campaignId  Int?
+    billboard   Billboard @relation(fields: [billboardId], references: [id])
+    billboardId Int
+}
+
+model CampaignStatus {
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    status     CampaignStatusType
+    campaign   Campaign           @relation(fields: [campaignId], references: [id])
+    campaignId Int                @id
+    agent      Agent?             @relation(fields: [agentId], references: [uid])
+    agentId    String?
+}
+
+enum BillboardType {
+    CLASSIC
+    VINYL
+    LED
+    NEON
+    THREE_DIMENSIONAL
+}
+
+enum BillboardStatusType {
+    NEW
+    VERIFIED
+
+    APPROVED
+    ON_HOLD
+    REJECTED
+
+    INSTALLATION_INPROGRESS
+
+    LIVE
+}
+
+enum CampaignStatusType {
+    NEW
+    VERIFIED
+
+    APPROVED
+    ON_HOLD
+    REJECTED
+
+    INSTALLATION_INPROGRESS
+
+    LIVE
 }
