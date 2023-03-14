@@ -5,6 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { join } from 'path'
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import { PrismaModule } from './common/prisma/prisma.module'
 import { ItemModule } from './item/item.module'
 
 @Module({
@@ -17,8 +18,12 @@ import { ItemModule } from './item/item.module'
         numberScalarMode: 'integer',
       },
     }),
+
+    PrismaModule,
+
     ItemModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })
