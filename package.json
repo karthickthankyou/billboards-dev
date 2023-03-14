@@ -1,0 +1,19 @@
+{
+  "name": "billboards",
+  "version": "1.0.0",
+  "license": "MIT",
+  "private": "true",
+  "workspaces": {
+    "packages": [
+      "apps/*"
+    ],
+    "nohoist": [
+      "**/@nestjs",
+      "**/@nestjs/**"
+    ]
+  },
+  "devDependencies": {
+    "nx": "15.4.2",
+    "@nrwl/nx-cloud": "latest"
+  }
+}
