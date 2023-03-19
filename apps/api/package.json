@@ -30,11 +30,17 @@
     "@nestjs/graphql": "^11.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@prisma/client": "^4.11.0",
+    "firebase-admin": "^11.5.0",
     "graphql": "^16.6.0",
+    "graphql-request": "^5.2.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
   },
+  "prisma": {
+    "seed": "npx ts-node-dev --compiler-options {\"module\":\"CommonJS\"} prisma/seed/index.ts"
+  },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",

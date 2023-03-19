@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client'
 import { DateTimeFilter, StringFilter } from 'src/common/dtos/common.input'
 import { BillboardStatusListRelationFilter } from 'src/models/billboard-statuses/dto/where.args'
 import { CampaignStatusListRelationFilter } from 'src/models/campaign-statuses/dto/where.args'
-import { UserRelationFilter } from 'src/models/users/dto/where.args'
 
 @InputType()
 export class AgentWhereUniqueInput
@@ -23,8 +22,7 @@ export class AgentWhereInput implements Required<Prisma.AgentWhereInput> {
   updatedAt: DateTimeFilter
   @Field(() => StringFilter, { nullable: true })
   name: StringFilter
-  @Field(() => UserRelationFilter, { nullable: true })
-  user: UserRelationFilter
+
   @Field(() => BillboardStatusListRelationFilter, { nullable: true })
   billboardsStatuses: BillboardStatusListRelationFilter
   @Field(() => CampaignStatusListRelationFilter, { nullable: true })

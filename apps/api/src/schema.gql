@@ -21,14 +21,33 @@ type Agent {
   name: String!
 }
 
+type BillboardStatus {
+  status: BillboardStatusType!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  notes: String!
+  billboardId: Int!
+  agentId: String!
+}
+
+enum BillboardStatusType {
+  NEW
+  VERIFIED
+  APPROVED
+  ON_HOLD
+  REJECTED
+  INSTALLATION_INPROGRESS
+  LIVE
+}
+
 type Billboard {
+  lat: Float!
+  lng: Float!
   type: BillboardType!
   ownerId: String!
   id: Int!
   createdAt: DateTime!
   updatedAt: DateTime!
-  lat: Int!
-  lng: Int!
   height: Int!
   width: Int!
   pricePerDay: Int!
@@ -99,16 +118,7 @@ type Owner {
   name: String!
 }
 
-type User {
-  uid: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  email: String!
-}
-
 type Query {
-  users(where: UserWhereInput, orderBy: [UserOrderByWithRelationInput!], cursor: WhereUniqueInputUid, take: Int, skip: Int, distinct: [UserScalarFieldEnum!]): [User!]!
-  user(where: UserWhereUniqueInput): User!
   owners(where: OwnerWhereInput, orderBy: [OwnerOrderByWithRelationInput!], cursor: WhereUniqueInputUid, take: Int, skip: Int, distinct: [OwnerScalarFieldEnum!]): [Owner!]!
   owner(where: OwnerWhereUniqueInput): Owner!
   advertisers(where: AdvertiserWhereInput, orderBy: [AdvertiserOrderByWithRelationInput!], cursor: WhereUniqueInputUid, take: Int, skip: Int, distinct: [AdvertiserScalarFieldEnum!]): [Advertiser!]!
@@ -117,6 +127,8 @@ type Query {
   agent(where: AgentWhereUniqueInput): Agent!
   billboards(where: BillboardWhereInput, orderBy: [BillboardOrderByWithRelationInput!], cursor: WhereUniqueInputNumber, take: Int, skip: Int, distinct: [BillboardScalarFieldEnum!]): [Billboard!]!
   billboard(where: BillboardWhereUniqueInput): Billboard!
+  billboardStatuses(where: BillboardStatusWhereInput, orderBy: [BillboardStatusOrderByWithRelationInput!], cursor: WhereUniqueInputBillboardId, take: Int, skip: Int, distinct: [BillboardStatusScalarFieldEnum!]): [BillboardStatus!]!
+  billboardStatus(where: BillboardStatusWhereUniqueInput): BillboardStatus!
   favorites(where: FavoriteWhereInput, orderBy: [FavoriteOrderByWithRelationInput!], cursor: WhereUniqueInputFavorite, take: Int, skip: Int, distinct: [FavoriteScalarFieldEnum!]): [Favorite!]!
   favorite(where: FavoriteWhereUniqueInput): Favorite!
   campaigns(where: CampaignWhereInput, orderBy: [CampaignOrderByWithRelationInput!], cursor: WhereUniqueInputNumber, take: Int, skip: Int, distinct: [CampaignScalarFieldEnum!]): [Campaign!]!
@@ -127,17 +139,15 @@ type Query {
   campaignStatus(where: CampaignStatusWhereUniqueInput): CampaignStatus!
 }
 
-input UserWhereInput {
+input OwnerWhereInput {
   uid: StringFilter
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
-  email: StringFilter
-  owner: OwnerRelationFilter
-  advertiser: AdvertiserRelationFilter
-  agent: AgentRelationFilter
-  AND: [UserWhereInput!]
-  OR: [UserWhereInput!]
-  NOT: [UserWhereInput!]
+  name: StringFilter
+  billboards: BillboardListRelationFilter
+  AND: [OwnerWhereInput!]
+  OR: [OwnerWhereInput!]
+  NOT: [OwnerWhereInput!]
 }
 
 input StringFilter {
@@ -168,28 +178,6 @@ input DateTimeFilter {
   lte: String
   gt: String
   gte: String
-}
-
-input OwnerRelationFilter {
-  is: OwnerWhereInput
-  isNot: OwnerWhereInput
-}
-
-input OwnerWhereInput {
-  uid: StringFilter
-  createdAt: DateTimeFilter
-  updatedAt: DateTimeFilter
-  name: StringFilter
-  user: UserRelationFilter
-  billboards: BillboardListRelationFilter
-  AND: [OwnerWhereInput!]
-  OR: [OwnerWhereInput!]
-  NOT: [OwnerWhereInput!]
-}
-
-input UserRelationFilter {
-  is: UserWhereInput
-  isNot: UserWhereInput
 }
 
 input BillboardListRelationFilter {
@@ -243,6 +231,11 @@ input StringListFilter {
   isEmpty: Boolean
 }
 
+input OwnerRelationFilter {
+  is: OwnerWhereInput
+  isNot: OwnerWhereInput
+}
+
 input BookingListRelationFilter {
   every: BookingWhereInput
   some: BookingWhereInput
@@ -294,7 +287,6 @@ input AdvertiserWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
-  user: UserRelationFilter
   campaigns: CampaignListRelationFilter
   Favorite: FavoriteListRelationFilter
   AND: [AdvertiserWhereInput!]
@@ -359,7 +351,6 @@ input AgentWhereInput {
   createdAt: DateTimeFilter
   updatedAt: DateTimeFilter
   name: StringFilter
-  user: UserRelationFilter
   billboardsStatuses: BillboardStatusListRelationFilter
   campaignsStatuses: CampaignStatusListRelationFilter
   AND: [AgentWhereInput!]
@@ -387,16 +378,6 @@ input BillboardStatusWhereInput {
   NOT: [BillboardStatusWhereInput!]
 }
 
-enum BillboardStatusType {
-  NEW
-  VERIFIED
-  APPROVED
-  ON_HOLD
-  REJECTED
-  INSTALLATION_INPROGRESS
-  LIVE
-}
-
 input CampaignStatusListRelationFilter {
   every: CampaignStatusWhereInput
   some: CampaignStatusWhereInput
@@ -408,14 +389,12 @@ input BillboardStatusRelationFilter {
   isNot: BillboardStatusWhereInput
 }
 
-input UserOrderByWithRelationInput {
+input OwnerOrderByWithRelationInput {
   uid: SortOrder
   createdAt: SortOrder
   updatedAt: SortOrder
-  email: SortOrder
-  owner: OwnerOrderByWithRelationInput
-  advertiser: AdvertiserOrderByWithRelationInput
-  agent: AgentOrderByWithRelationInput
+  name: SortOrder
+  billboards: BillboardOrderByRelationAggregateInput
 }
 
 enum SortOrder {
@@ -423,69 +402,12 @@ enum SortOrder {
   desc
 }
 
-input OwnerOrderByWithRelationInput {
-  uid: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  user: UserOrderByWithRelationInput
-  billboards: BillboardOrderByRelationAggregateInput
-}
-
 input BillboardOrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-input AdvertiserOrderByWithRelationInput {
-  uid: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  user: UserOrderByWithRelationInput
-  campaigns: CampaignOrderByRelationAggregateInput
-  Favorite: FavoriteOrderByRelationAggregateInput
-}
-
-input CampaignOrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-input FavoriteOrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-input AgentOrderByWithRelationInput {
-  uid: SortOrder
-  createdAt: SortOrder
-  updatedAt: SortOrder
-  name: SortOrder
-  user: UserOrderByWithRelationInput
-  billboardsStatuses: BillboardStatusOrderByRelationAggregateInput
-  campaignsStatuses: CampaignStatusOrderByRelationAggregateInput
-}
-
-input BillboardStatusOrderByRelationAggregateInput {
-  _count: SortOrder
-}
-
-input CampaignStatusOrderByRelationAggregateInput {
   _count: SortOrder
 }
 
 input WhereUniqueInputUid {
   uid: String
-}
-
-enum UserScalarFieldEnum {
-  uid
-  createdAt
-  updatedAt
-  email
-}
-
-input UserWhereUniqueInput {
-  uid: String
-  email: String
 }
 
 enum OwnerScalarFieldEnum {
@@ -499,6 +421,23 @@ input OwnerWhereUniqueInput {
   uid: String
 }
 
+input AdvertiserOrderByWithRelationInput {
+  uid: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  campaigns: CampaignOrderByRelationAggregateInput
+  Favorite: FavoriteOrderByRelationAggregateInput
+}
+
+input CampaignOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input FavoriteOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
 enum AdvertiserScalarFieldEnum {
   uid
   createdAt
@@ -508,6 +447,23 @@ enum AdvertiserScalarFieldEnum {
 
 input AdvertiserWhereUniqueInput {
   uid: String
+}
+
+input AgentOrderByWithRelationInput {
+  uid: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  billboardsStatuses: BillboardStatusOrderByRelationAggregateInput
+  campaignsStatuses: CampaignStatusOrderByRelationAggregateInput
+}
+
+input BillboardStatusOrderByRelationAggregateInput {
+  _count: SortOrder
+}
+
+input CampaignStatusOrderByRelationAggregateInput {
+  _count: SortOrder
 }
 
 enum AgentScalarFieldEnum {
@@ -584,6 +540,23 @@ enum BillboardScalarFieldEnum {
 
 input BillboardWhereUniqueInput {
   id: Int
+}
+
+input WhereUniqueInputBillboardId {
+  billboardId: Int
+}
+
+enum BillboardStatusScalarFieldEnum {
+  createdAt
+  updatedAt
+  notes
+  status
+  billboardId
+  agentId
+}
+
+input BillboardStatusWhereUniqueInput {
+  billboardId: Int
 }
 
 input FavoriteOrderByWithRelationInput {
@@ -693,9 +666,6 @@ input CampaignStatusWhereUniqueInput {
 }
 
 type Mutation {
-  createUser(createUserInput: CreateUserInput!): User!
-  updateUser(updateUserInput: UpdateUserInput!): User!
-  removeUser(where: UserWhereUniqueInput): User!
   createOwner(createOwnerInput: CreateOwnerInput!): Owner!
   updateOwner(updateOwnerInput: UpdateOwnerInput!): Owner!
   removeOwner(where: OwnerWhereUniqueInput): Owner!
@@ -708,6 +678,9 @@ type Mutation {
   createBillboard(createBillboardInput: CreateBillboardInput!): Billboard!
   updateBillboard(updateBillboardInput: UpdateBillboardInput!): Billboard!
   removeBillboard(where: BillboardWhereUniqueInput): Billboard!
+  createBillboardStatus(createBillboardStatusInput: CreateBillboardStatusInput!): BillboardStatus!
+  updateBillboardStatus(updateBillboardStatusInput: UpdateBillboardStatusInput!): BillboardStatus!
+  removeBillboardStatus(where: BillboardStatusWhereUniqueInput): BillboardStatus!
   createFavorite(createFavoriteInput: CreateFavoriteInput!): Favorite!
   updateFavorite(updateFavoriteInput: UpdateFavoriteInput!): Favorite!
   removeFavorite(where: FavoriteWhereUniqueInput): Favorite!
@@ -720,16 +693,6 @@ type Mutation {
   createCampaignStatus(createCampaignStatusInput: CreateCampaignStatusInput!): CampaignStatus!
   updateCampaignStatus(updateCampaignStatusInput: UpdateCampaignStatusInput!): CampaignStatus!
   removeCampaignStatus(where: CampaignStatusWhereUniqueInput): CampaignStatus!
-}
-
-input CreateUserInput {
-  uid: String!
-  email: String!
-}
-
-input UpdateUserInput {
-  uid: String!
-  email: String
 }
 
 input CreateOwnerInput {
@@ -763,10 +726,10 @@ input UpdateAgentInput {
 }
 
 input CreateBillboardInput {
+  lat: Float!
+  lng: Float!
   type: BillboardType!
   ownerId: String!
-  lat: Int!
-  lng: Int!
   height: Int!
   width: Int!
   impressionsPerDay: Int!
@@ -778,10 +741,10 @@ input CreateBillboardInput {
 }
 
 input UpdateBillboardInput {
+  lat: Float
+  lng: Float
   type: BillboardType
   ownerId: String
-  lat: Int
-  lng: Int
   height: Int
   width: Int
   impressionsPerDay: Int
@@ -791,6 +754,20 @@ input UpdateBillboardInput {
   angle: Int
   elevation: Int
   id: Int!
+}
+
+input CreateBillboardStatusInput {
+  status: BillboardStatusType!
+  notes: String!
+  billboardId: Int!
+  agentId: String!
+}
+
+input UpdateBillboardStatusInput {
+  status: BillboardStatusType
+  notes: String
+  billboardId: Int!
+  agentId: String
 }
 
 input CreateFavoriteInput {
@@ -809,13 +786,18 @@ input CreateCampaignInput {
   startDate: DateTime!
   endDate: DateTime!
   advertiserId: String!
+  bookings: [CreateBookingWithoutCampaignIdInput!]!
+}
+
+input CreateBookingWithoutCampaignIdInput {
+  pricePerDay: Int!
+  billboardId: Int!
 }
 
 input UpdateCampaignInput {
   name: String
   startDate: DateTime
   endDate: DateTime
-  advertiserId: String
   id: Int!
 }
 

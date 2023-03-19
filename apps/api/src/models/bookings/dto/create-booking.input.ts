@@ -7,3 +7,10 @@ export class CreateBookingInput extends PickType(
   ['billboardId', 'campaignId', 'pricePerDay'],
   InputType,
 ) {}
+
+@InputType()
+export class CreateBookingWithoutCampaignIdInput extends PickType(
+  Booking,
+  ['billboardId', 'pricePerDay'],
+  InputType,
+) {}

@@ -1,4 +1,4 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql'
+import { Field, Float, ObjectType, registerEnumType } from '@nestjs/graphql'
 import {
   Billboard as BillboardObjectType,
   BillboardStatusType,
@@ -14,7 +14,9 @@ export class Billboard implements BillboardObjectType {
   id: number
   createdAt: Date
   updatedAt: Date
+  @Field(() => Float)
   lat: number
+  @Field(() => Float)
   lng: number
   height: number
   width: number

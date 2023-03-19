@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client'
 import { SortOrder } from 'src/common/dtos/common.input'
 import { CampaignOrderByRelationAggregateInput } from 'src/models/campaigns/dto/orderBy.args'
 import { FavoriteOrderByRelationAggregateInput } from 'src/models/favorites/dto/orderBy.args'
-import { UserOrderByWithRelationInput } from 'src/models/users/dto/orderBy.args'
 
 @InputType()
 export class AdvertiserOrderByWithRelationInput
@@ -17,8 +16,6 @@ export class AdvertiserOrderByWithRelationInput
   updatedAt: SortOrder
   @Field(() => SortOrder, { nullable: true })
   name: SortOrder
-  @Field(() => UserOrderByWithRelationInput, { nullable: true })
-  user: UserOrderByWithRelationInput
   @Field(() => CampaignOrderByRelationAggregateInput, { nullable: true })
   campaigns: CampaignOrderByRelationAggregateInput
   @Field(() => FavoriteOrderByRelationAggregateInput, { nullable: true })

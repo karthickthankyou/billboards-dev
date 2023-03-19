@@ -10,23 +10,11 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model User {
-    uid       String   @id
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    email     String   @unique
-
-    owner      Owner?
-    advertiser Advertiser?
-    agent      Agent?
-}
-
 model Owner {
     uid        String      @id
     createdAt  DateTime    @default(now())
     updatedAt  DateTime    @updatedAt
     name       String
-    user       User        @relation(fields: [uid], references: [uid])
     billboards Billboard[]
 }
 
@@ -36,7 +24,6 @@ model Advertiser {
     updatedAt DateTime @updatedAt
     name      String
 
-    user      User       @relation(fields: [uid], references: [uid])
     campaigns Campaign[]
     Favorite  Favorite[]
 }
@@ -47,7 +34,6 @@ model Agent {
     updatedAt DateTime @updatedAt
     name      String
 
-    user               User              @relation(fields: [uid], references: [uid])
     billboardsStatuses BillboardStatus[]
     campaignsStatuses  CampaignStatus[]
 }

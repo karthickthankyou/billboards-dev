@@ -2,7 +2,6 @@ import { Field, InputType } from '@nestjs/graphql'
 import { Prisma } from '@prisma/client'
 import { SortOrder } from 'src/common/dtos/common.input'
 import { BillboardOrderByRelationAggregateInput } from 'src/models/billboards/dto/orderBy.args'
-import { UserOrderByWithRelationInput } from 'src/models/users/dto/orderBy.args'
 
 @InputType()
 export class OwnerOrderByWithRelationInput
@@ -16,8 +15,6 @@ export class OwnerOrderByWithRelationInput
   updatedAt: SortOrder
   @Field(() => SortOrder, { nullable: true })
   name: SortOrder
-  @Field(() => UserOrderByWithRelationInput, { nullable: true })
-  user: UserOrderByWithRelationInput
   @Field(() => BillboardOrderByRelationAggregateInput, { nullable: true })
   billboards: BillboardOrderByRelationAggregateInput
   // Todo: Add properties

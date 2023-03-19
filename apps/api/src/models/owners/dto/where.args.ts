@@ -2,7 +2,6 @@ import { Field, InputType } from '@nestjs/graphql'
 import { Prisma } from '@prisma/client'
 import { DateTimeFilter, StringFilter } from 'src/common/dtos/common.input'
 import { BillboardListRelationFilter } from 'src/models/billboards/dto/where.args'
-import { UserRelationFilter } from 'src/models/users/dto/where.args'
 
 @InputType()
 export class OwnerWhereUniqueInput
@@ -22,8 +21,6 @@ export class OwnerWhereInput implements Required<Prisma.OwnerWhereInput> {
   updatedAt: DateTimeFilter
   @Field(() => StringFilter, { nullable: true })
   name: StringFilter
-  @Field(() => UserRelationFilter, { nullable: true })
-  user: UserRelationFilter
   @Field(() => BillboardListRelationFilter, { nullable: true })
   billboards: BillboardListRelationFilter
 

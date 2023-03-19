@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client'
 import { DateTimeFilter, StringFilter } from 'src/common/dtos/common.input'
 import { CampaignListRelationFilter } from 'src/models/campaigns/dto/where.args'
 import { FavoriteListRelationFilter } from 'src/models/favorites/dto/where.args'
-import { UserRelationFilter } from 'src/models/users/dto/where.args'
 
 @InputType()
 export class AdvertiserWhereUniqueInput
@@ -25,8 +24,6 @@ export class AdvertiserWhereInput
   updatedAt: DateTimeFilter
   @Field(() => StringFilter, { nullable: true })
   name: StringFilter
-  @Field(() => UserRelationFilter, { nullable: true })
-  user: UserRelationFilter
   @Field(() => CampaignListRelationFilter, { nullable: true })
   campaigns: CampaignListRelationFilter
   @Field(() => FavoriteListRelationFilter, { nullable: true })
